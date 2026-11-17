@@ -1,0 +1,40 @@
+name: Decode binary assets onto gh-pages
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  decode:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout gh-pages
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+      - name: Decode base64 sidecars into binaries
+        run: |
+          set -euo pipefail
+          found=0
+          while IFS= read -r -d '' f; do
+            dest="${f%.b64}"
+            base64 -d "$f" > "$dest"
+            rm -f "$f"
+            found=$((found+1))
+            echo "decoded $dest ($(wc -c < "$dest") bytes)"
+          done < <(find . -name '*.b64' -print0)
+          if [ "$found" -eq 0 ]; then
+            echo "No .b64 files found"
+            exit 1
+          fi
+          echo "Decoded $found files"
+      - name: Commit and push binaries
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git commit -m "Decode binary assets for SENQUIII Music Lab review"
+          git push origin gh-pages
