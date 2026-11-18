@@ -1,0 +1,87 @@
+name: Republish review site
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  republish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main (staging files)
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: staging
+      - name: Checkout gh-pages with history
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          fetch-depth: 0
+          path: site
+      - name: Restore review site with new profile photo
+        run: |
+          set -euo pipefail
+          cd site
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          REVIEW=fb70bd330e6374c2bd6ca371f1a14c04f989e946
+          git rm -rf --quiet .
+          git checkout "$REVIEW" -- .
+          python3 <<'PY'
+          from pathlib import Path
+          p = Path("index.html")
+          t = p.read_text()
+          t = t.replace(
+              "<!-- Profile photo slot: replace assets/senquiii-red.jpg with the red-toned artist photo (same filename) -->",
+              "<!-- Profile photo: Senquiii profile picture -->",
+          )
+          t = t.replace('width="960" height="1200"', 'width="1408" height="1408"')
+          p.write_text(t)
+          p = Path("css/styles.css")
+          t = p.read_text()
+          t = t.replace(
+              ".portrait img{width:100%;height:auto;aspect-ratio:4/5;object-fit:cover;object-position:50% 30%;border-radius:calc(var(--r-lg) - 6px);background:var(--surface)}",
+              ".portrait img{width:100%;height:auto;aspect-ratio:1/1;object-fit:cover;object-position:50% 50%;border-radius:calc(var(--r-lg) - 6px);background:var(--surface)}",
+          )
+          t = t.replace(
+              ".portrait figcaption{position:absolute;left:24px;bottom:24px;",
+              ".portrait figcaption{position:absolute;left:24px;top:24px;",
+          )
+          t = t.replace(
+              "  .portrait figcaption{left:18px;bottom:18px;font-size:.62rem}",
+              "  .portrait figcaption{left:18px;top:18px;font-size:.62rem}",
+          )
+          p.write_text(t)
+          PY
+          base64 -d ../staging/.publish-staging/senquiii-red.jpg.b64 > assets/senquiii-red.jpg
+          check() {
+            local got expected path
+            path="$1"; expected="$2"
+            got=$(git hash-object "$path")
+            if [ "$got" != "$expected" ]; then
+              echo "hash mismatch $path: $got != $expected"
+              exit 1
+            fi
+            echo "ok $path $got"
+          }
+          check index.html 99a9248e09f9034a07cd01d879e3fd830aeeb07d
+          check css/styles.css a2b6cca5148f7e06740850211fbb9e60d451a0db
+          check assets/senquiii-red.jpg cbb03471fbb3bae0dee043da0b646dabaaaf34b3
+          bytes=$(wc -c < assets/senquiii-red.jpg)
+          if [ "$bytes" -ne 318309 ]; then
+            echo "size mismatch assets/senquiii-red.jpg: $bytes"
+            exit 1
+          fi
+          git add -A
+          git commit -m "Republish SENQUIII Music Lab for review (new profile photo)"
+          git push origin gh-pages
+      - name: Remove temporary workflow and staging from main
+        if: success()
+        run: |
+          set -euo pipefail
+          cd staging
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm -f .github/workflows/republish-review-site.yml .publish-staging/senquiii-red.jpg.b64
+          git commit -m "Remove temporary republish workflow and staging files"
+          git push origin main
