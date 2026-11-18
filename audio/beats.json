@@ -1,0 +1,142 @@
+[
+ {
+  "id": "hiphop-midnight-bap",
+  "title": "Midnight Ledger",
+  "genre": "hip-hop",
+  "bpm": 90,
+  "key": "D minor",
+  "mood": "Boom bap, dusty keys",
+  "seconds": 42.7,
+  "file": "audio/hiphop-midnight-bap.mp3"
+ },
+ {
+  "id": "hiphop-corner-store",
+  "title": "Corner Store Gospel",
+  "genre": "hip-hop",
+  "bpm": 94,
+  "key": "F minor",
+  "mood": "Head-nod, soulful",
+  "seconds": 40.9,
+  "file": "audio/hiphop-corner-store.mp3"
+ },
+ {
+  "id": "hiphop-cypher-steps",
+  "title": "Concrete Cypher",
+  "genre": "hip-hop",
+  "bpm": 86,
+  "key": "A minor",
+  "mood": "Gritty, freestyle-ready",
+  "seconds": 44.7,
+  "file": "audio/hiphop-cypher-steps.mp3"
+ },
+ {
+  "id": "trap-glass-city",
+  "title": "Glass Cathedral",
+  "genre": "trap",
+  "bpm": 140,
+  "key": "C# minor",
+  "mood": "Dark, heavy 808",
+  "seconds": 41.1,
+  "file": "audio/trap-glass-city.mp3"
+ },
+ {
+  "id": "trap-neon-drip",
+  "title": "Afterglow Drip",
+  "genre": "trap",
+  "bpm": 150,
+  "key": "G minor",
+  "mood": "Bouncy, melodic",
+  "seconds": 38.4,
+  "file": "audio/trap-neon-drip.mp3"
+ },
+ {
+  "id": "trap-low-orbit",
+  "title": "Low Orbit",
+  "genre": "trap",
+  "bpm": 130,
+  "key": "E minor",
+  "mood": "Spacey, ambient",
+  "seconds": 44.3,
+  "file": "audio/trap-low-orbit.mp3"
+ },
+ {
+  "id": "lofi-rainy-window",
+  "title": "Rain on the 4th Floor",
+  "genre": "lo-fi",
+  "bpm": 78,
+  "key": "Eb major",
+  "mood": "Chill, study",
+  "seconds": 36.9,
+  "file": "audio/lofi-rainy-window.mp3"
+ },
+ {
+  "id": "lofi-sunday-tape",
+  "title": "Sunday Tape Hiss",
+  "genre": "lo-fi",
+  "bpm": 72,
+  "key": "A minor",
+  "mood": "Mellow, nostalgic",
+  "seconds": 40.0,
+  "file": "audio/lofi-sunday-tape.mp3"
+ },
+ {
+  "id": "rock-open-road",
+  "title": "Highway Static",
+  "genre": "rock",
+  "bpm": 128,
+  "key": "E major",
+  "mood": "Driving, anthemic",
+  "seconds": 37.5,
+  "file": "audio/rock-open-road.mp3"
+ },
+ {
+  "id": "rock-garage-fuzz",
+  "title": "Fuzz & Gasoline",
+  "genre": "rock",
+  "bpm": 140,
+  "key": "A major",
+  "mood": "Raw, fast",
+  "seconds": 34.3,
+  "file": "audio/rock-garage-fuzz.mp3"
+ },
+ {
+  "id": "blues-smoky-room",
+  "title": "Smoke Room Shuffle",
+  "genre": "blues",
+  "bpm": 96,
+  "key": "A (12-bar)",
+  "mood": "Shuffle, organ",
+  "seconds": 30.0,
+  "file": "audio/blues-smoky-room.mp3"
+ },
+ {
+  "id": "blues-delta-walk",
+  "title": "Delta Night Walk",
+  "genre": "blues",
+  "bpm": 84,
+  "key": "E (12-bar)",
+  "mood": "Slow shuffle, twangy",
+  "seconds": 34.3,
+  "file": "audio/blues-delta-walk.mp3"
+ },
+ {
+  "id": "jazz-after-hours",
+  "title": "After Hours, Low Lamp",
+  "genre": "jazz",
+  "bpm": 120,
+  "key": "Bb major",
+  "mood": "Swing, ii-V-I",
+  "seconds": 32.0,
+  "file": "audio/jazz-after-hours.mp3"
+ },
+ {
+  "id": "jazz-blue-velvet",
+  "title": "Velvet Rope Swing",
+  "genre": "jazz",
+  "bpm": 100,
+  "key": "F major",
+  "mood": "Smooth, late night",
+  "seconds": 38.4,
+  "file": "audio/jazz-blue-velvet.mp3"
+ }
+]
