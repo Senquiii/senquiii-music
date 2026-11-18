@@ -1,0 +1,29 @@
+/*
+  SENQUIII Music Lab: site settings. Every placeholder lives here (plus the literal text in index.html).
+  To go live, find-and-replace across the project:
+    xsenquiiix@gmail.com          -> the real contact email
+    [PAYPAL_LINK_PLACEHOLDER]    -> the real PayPal link (e.g. https://paypal.me/yourname)
+*/
+window.SENQ_CONFIG = {
+  // Contact (Contact tab + footer). Messages arrive with the subject "[SENQUIII Contact] <visitor's subject>".
+  CONTACT_EMAIL: "xsenquiiix@gmail.com",
+  CONTACT_SUBJECT_PREFIX: "[SENQUIII Contact] ",
+  // Optional form service so visitors don't need an email app. Create a free form at https://formspree.io
+  // pointed at the contact email and paste its URL. Leave the placeholder to use the email (mailto:) fallback.
+  CONTACT_ENDPOINT: "https://formspree.io/f/YOUR_CONTACT_FORM_ID", // PLACEHOLDER
+
+  // Music submissions (Work With Senquiii).
+  FORM_ENDPOINT: "https://formspree.io/f/YOUR_FORM_ID", // PLACEHOLDER
+
+  // Donations (optional). While this is still the placeholder, clicks show a friendly
+  // "not set up yet" note instead of opening a broken link.
+  PAYPAL_LINK: "[PAYPAL_LINK_PLACEHOLDER]",
+
+  // Beat Maker trending prompts.
+  // Prompts are always saved in the visitor's own browser. To combine prompts from ALL visitors,
+  // point these at a small database/API (e.g. a Supabase table or a serverless function):
+  //   POST TRENDING.submitUrl  with JSON {"prompt": "...", "ts": 1700000000000}
+  //   GET  TRENDING.topUrl     returning JSON [{"prompt": "...", "count": 12}, ...]
+  // Only the prompt text and a timestamp are sent. Leave blank to stay local-only.
+  TRENDING: { submitUrl: "", topUrl: "", headers: {} }
+};
