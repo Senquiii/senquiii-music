@@ -1,0 +1,29 @@
+name: Restore coming soon placeholder
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout gh-pages with history
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          fetch-depth: 0
+      - name: Restore placeholder tree
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          PLACEHOLDER=205254643057a3620729203b9b8c5911e5f3cac0
+          git rm -rf --quiet .
+          git checkout "$PLACEHOLDER" -- .
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Tree already matches placeholder"
+            exit 0
+          fi
+          git commit -m "Restore coming soon placeholder after review"
+          git push origin gh-pages
