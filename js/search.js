@@ -1,4 +1,4 @@
-/* SENQUIII Music Lab: global search (header). Indexes tabs, Learn sections, genre classes, modules, and tracks. */
+/* SENQUIII Music Lab: global search (header). Indexes tabs, Learn sections, genre classes, and modules. */
 (function () {
   "use strict";
   const $ = (s, el) => (el || document).querySelector(s);
@@ -25,7 +25,7 @@
   });
   // In-page headings (Keys principles, Push sections, etc.)
   $$("[data-page] h3").forEach((h, i) => {
-    const page = h.closest("[data-page]"); if (!page || page.id === "beat-maker" && !document.getElementById("beat-maker")) return;
+    const page = h.closest("[data-page]"); if (!page) return;
     if (h.closest("#curriculum")) return;
     if (!h.id) h.id = "s-" + page.id + "-" + i;
     const sub = $(".site-nav a[data-tab=\"" + page.id + "\"]");
@@ -45,11 +45,8 @@
     };
     C.MODULES.forEach((m) => add("Modules", g.name + " › " + m.title, "Genre Curriculum", "#class-" + g.id + "-" + m.id, g.name + " " + txt[m.id], 1));
   });
-  // Tracks
-  (window.SENQ_TRACKS || []).forEach((t, i) => add("Tracks", t.title, [t.genre, t.bpm ? t.bpm + " BPM" : "", t.key].filter(Boolean).join(" · "), "#track-" + i, (t.vibe || "") + " instrumental beat free download", 1));
-
-  const ORDER = ["Pages", "Genre classes", "Modules", "Learn", "Sections", "Tracks"];
-  const LIMIT = { Pages: 4, "Genre classes": 5, Modules: 6, Learn: 4, Sections: 4, Tracks: 5 };
+  const ORDER = ["Pages", "Genre classes", "Modules", "Learn", "Sections"];
+  const LIMIT = { Pages: 4, "Genre classes": 5, Modules: 6, Learn: 4, Sections: 4 };
 
   function hl(text, terms) {
     let s = esc(text);
@@ -60,7 +57,7 @@
   function run(q) {
     const terms = norm(q).split(/\s+/).filter(Boolean);
     if (!terms.length) {
-      out.innerHTML = '<div class="search-group"><h4>Popular</h4>' + [["Start here", "#learn-start", "The beginner path"], ["Genre Curriculum", "#learn-curriculum", "16 genres × 5 modules"], ["Solo Instrumentals", "#solo", "Free beats to download"], ["Write Lyrics", "#learn-lyrics", "Frameworks and prompts"]].map(([t, h, s]) => '<a class="search-item" role="option" href="' + h + '"><span>' + esc(t) + "</span><small>" + esc(s) + "</small></a>").join("") + "</div>";
+      out.innerHTML = '<div class="search-group"><h4>Popular</h4>' + [["Start here", "#learn-start", "The beginner path"], ["Genre Curriculum", "#learn-curriculum", "16 genres × 5 modules"], ["Push Your Music", "#push", "Share, grow, keep going"], ["Write Lyrics", "#learn-lyrics", "Frameworks and prompts"]].map(([t, h, s]) => '<a class="search-item" role="option" href="' + h + '"><span>' + esc(t) + "</span><small>" + esc(s) + "</small></a>").join("") + "</div>";
       items = $$(".search-item", out); sel = -1; return;
     }
     const scored = [];
@@ -90,8 +87,6 @@
   function go(a) {
     const href = a.getAttribute("href"); close();
     if (location.hash === href) window.dispatchEvent(new HashChangeEvent("hashchange")); else location.hash = href;
-    const m = /^#track-(\d+)$/.exec(href);
-    if (m) setTimeout(() => { const card = document.getElementById("track-" + m[1]); if (card && card.offsetParent === null) { const all = $("#soloFilter [data-g='all']"); if (all) all.click(); card.scrollIntoView({ block: "center" }); } if (card) { card.classList.add("flash"); setTimeout(() => card.classList.remove("flash"), 1600); } }, 60);
   }
   btn.addEventListener("click", () => (panel.hidden ? open() : close()));
   closeB.addEventListener("click", close);

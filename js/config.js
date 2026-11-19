@@ -17,13 +17,5 @@ window.SENQ_CONFIG = {
 
   // Donations (optional). While this is still the placeholder, clicks show a friendly
   // "not set up yet" note instead of opening a broken link.
-  PAYPAL_LINK: "[PAYPAL_LINK_PLACEHOLDER]",
-
-  // Beat Maker trending prompts.
-  // Prompts are always saved in the visitor's own browser. To combine prompts from ALL visitors,
-  // point these at a small database/API (e.g. a Supabase table or a serverless function):
-  //   POST TRENDING.submitUrl  with JSON {"prompt": "...", "ts": 1700000000000}
-  //   GET  TRENDING.topUrl     returning JSON [{"prompt": "...", "count": 12}, ...]
-  // Only the prompt text and a timestamp are sent. Leave blank to stay local-only.
-  TRENDING: { submitUrl: "", topUrl: "", headers: {} }
+  PAYPAL_LINK: "[PAYPAL_LINK_PLACEHOLDER]"
 };

@@ -1,9 +1,9 @@
 # SENQUIII Music Lab
 
-A free, static music site: lessons, a 16-genre curriculum, free instrumentals, a browser beat maker, and ways to connect.
+A free, static music site: lessons, a 16-genre curriculum, keys to the craft, and ways to connect.
 Plain HTML, CSS, and JavaScript. There's no build step, framework, or server code.
 
-> **Status: local draft.** Nothing in this folder has been published. Preview it locally (see below).
+> **Status: local draft.** Preview it locally (see below). Publish only when the owner asks.
 
 ## Preview locally
 
@@ -13,7 +13,7 @@ python3 -m http.server 8765
 # open http://localhost:8765
 ```
 
-Opening `index.html` straight from disk mostly works, but use a local server so audio downloads and the Beat Maker behave like they will online.
+Opening `index.html` straight from disk mostly works, but use a local server so the site behaves like it will online.
 
 ## File map
 
@@ -22,19 +22,15 @@ Opening `index.html` straight from disk mostly works, but use a local server so 
 | `index.html` | Every page (tabs are `<section data-page="…">`), the header, the footer, and the support modal |
 | `css/styles.css` | Design tokens (charcoal + amber, 4/8px spacing scale), layout, and all core pages |
 | `css/curriculum.css` | Genre Curriculum visuals and the print stylesheet |
-| `css/beatmaker.css` | Beat Maker only |
-| `js/config.js` | **All settings and placeholders** (contact email, form endpoints, PayPal link, trending backend) |
-| `js/app.js` | Router, hero waveform, Solo Instrumentals player, Learn tabs, roster, forms, support modal |
+| `js/config.js` | **All settings and placeholders** (contact email, form endpoints, PayPal link) |
+| `js/app.js` | Router, hero waveform, Learn tabs, roster, forms, support modal |
 | `js/curriculum-data.js` | Curriculum content: 16 genres × 5 modules (edit text here) |
 | `js/curriculum.js` | Curriculum UI: picker, modules, progress, chord charts, drum grids, timelines, EQ chart |
 | `js/search.js` | Header search (press `/` or Ctrl/⌘+K) |
-| `js/tracks.js` | Solo Instrumentals track list |
-| `js/peaks.js` | Pre-computed waveform shapes for the tracks |
 | `js/roster.js` | Work With Senquiii roster and YouTube slots |
-| `js/beatgen.js`, `js/beatmaker.js` | Beat Maker engine and UI |
-| `audio/` | 14 original instrumentals (MP3), made with `tools/gen_beats.py` |
-| `assets/` | Favicon and the two photo placeholders |
-| `tests/` | Headless browser tests and audio analysis |
+| `assets/` | Favicon and the two photos |
+| `tests/` | Headless browser tests |
+| `saved-for-later/` | Pieces set aside for later (including the removed Beat Maker and Solo Instrumentals tabs) |
 
 ## Going live: placeholders to replace
 
@@ -51,7 +47,7 @@ Search the project for these exact strings and replace them:
 One command does the two main swaps (macOS: use `sed -i ''`):
 
 ```bash
-grep -rl --exclude-dir=test-renders "\[PLACEHOLDER_EMAIL\]\|\[PAYPAL_LINK_PLACEHOLDER\]" . | xargs sed -i \
+grep -rl --exclude-dir=test-renders --exclude-dir=saved-for-later "\[PLACEHOLDER_EMAIL\]\|\[PAYPAL_LINK_PLACEHOLDER\]" . | xargs sed -i \
   -e 's#\[PLACEHOLDER_EMAIL\]#you@example.com#g' \
   -e 's#\[PAYPAL_LINK_PLACEHOLDER\]#https://paypal.me/yourname#g'
 ```
@@ -70,36 +66,21 @@ grep -rl --exclude-dir=test-renders "\[PLACEHOLDER_EMAIL\]\|\[PAYPAL_LINK_PLACEH
 
 Replace these two files, keeping the same names:
 
-* `assets/senquiii-red.jpg`: profile photo (Home hero and About). Portrait 4:5 works best (e.g. 960×1200); it's cropped toward the top third.
+* `assets/senquiii-red.jpg`: profile photo (Home hero and About). A square (1:1) crop works best; the frame is square and the caption sits at the top.
 * `assets/senquiii-blue.jpg`: wallpaper. Landscape (e.g. 1920×1080). It's automatically dimmed, blurred, and covered with a dark gradient.
-
-## Removing the Beat Maker (one step)
-
-Delete the block between `<!-- BEAT MAKER MODULE START -->` and `<!-- BEAT MAKER MODULE END -->` in `index.html`.
-(Optionally also delete `js/beatgen.js`, `js/beatmaker.js`, `css/beatmaker.css` and their two `<script>`/one `<link>` tags marked "Beat Maker module".)
-
-Everything else adapts on its own: the nav link disappears and tabs renumber, Home buttons fall back to **Solo Instrumentals**, the hero stat swaps, search drops it, and no other script depends on it.
 
 ## Editing content
 
-* **Tracks:** add an MP3 to `audio/` and an entry to `js/tracks.js` (title, genre, bpm, key, vibe, file). Waveforms for new files fall back to a generic shape. To regenerate exact peaks, see `tools/`.
 * **Roster videos:** paste a YouTube URL into a track's `youtube` field in `js/roster.js`. Empty slots show "Coming soon."
 * **Curriculum:** edit `js/curriculum-data.js`. Drum rows are 16 characters (`x` hit, `X` accent, `-` rest); chord names draw their own keyboard diagrams; song-map times are calculated from BPM.
 * **Learner progress** is stored only in the visitor's browser (`localStorage` key `senq_curriculum_progress_v1`).
 
-## Beat Maker trending prompts (optional backend)
-
-Prompts are saved in each visitor's browser. To show trends from all visitors, set `TRENDING.submitUrl` and `TRENDING.topUrl` in `js/config.js`:
-
-* `POST submitUrl` with `{"prompt": "...", "ts": 1700000000000}`
-* `GET topUrl` returns `[{"prompt": "...", "count": 12}, ...]`
+The Beat Maker and Solo Instrumentals tabs were removed from the live build and saved in `saved-for-later/removed-tabs/` (plus a full snapshot in `saved-for-later/full-site-before-tab-removal/`) so they can be restored later.
 
 ## Tests
 
 ```bash
 python3 -m http.server 8765 &          # from the site folder
-python tests/beatmaker_test.py         # renders prompts, regenerate/edit/extend, saves WAVs to test-renders/
-python tests/analyze.py                # loudness / peak / spectrum per render
 python tests/screens.py                # desktop + mobile screenshots of every tab into screenshots/
 ```
 (Tests use Playwright with a system Chrome at `/usr/bin/google-chrome`.)

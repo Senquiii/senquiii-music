@@ -1,17 +1,11 @@
-/* SENQUIII Music Lab: core site script (navigation, Solo Instrumentals, Learn, Work With, donations).
-   Nothing here depends on the Beat Maker module. */
+/* SENQUIII Music Lab: core site script (navigation, Learn, Work With, donations). */
 (function () {
   "use strict";
   const $ = (sel, root) => (root || document).querySelector(sel);
   const $$ = (sel, root) => Array.from((root || document).querySelectorAll(sel));
   const CFG = window.SENQ_CONFIG || {};
   const reduceMotion = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const fmt = (t) => { t = Math.max(0, t || 0); return Math.floor(t / 60) + ":" + String(Math.floor(t % 60)).padStart(2, "0"); };
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-  const ICON_PLAY = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
-  const ICON_PAUSE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>';
-  const ICON_DL = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 3h2v10.2l3.6-3.6 1.4 1.4-6 6-6-6 1.4-1.4 3.6 3.6zM4 19h16v2H4z"/></svg>';
-
   // ---------- optional modules: degrade gracefully when a page was removed ----------
   const pageIds = $$("[data-page]").map((p) => p.dataset.page);
   const has = (id) => pageIds.includes(id);
@@ -56,7 +50,7 @@
       $$("[data-page]").forEach((p) => (p.hidden = p.dataset.page !== id));
       $$(".site-nav a").forEach((a) => { const on = a.dataset.tab === id; a.classList.toggle("active", on); on ? a.setAttribute("aria-current", "page") : a.removeAttribute("aria-current"); });
       menuCurrent.textContent = TITLES[id] || "Home";
-      document.title = id === "home" ? "SENQUIII Music Lab: Beats, Lessons & Free Instrumentals" : (TITLES[id] + " · SENQUIII Music Lab");
+      document.title = id === "home" ? "SENQUIII Music Lab: Lessons, Craft & Community" : (TITLES[id] + " · SENQUIII Music Lab");
       current = id;
       document.dispatchEvent(new CustomEvent("senq:page", { detail: id }));
     }
@@ -134,97 +128,6 @@
     document.addEventListener("senq:page", (e) => { if (e.detail === "home") start(); });
     document.addEventListener("visibilitychange", () => { if (!document.hidden && current === "home") start(); });
     start();
-  })();
-
-  // ---------- Solo Instrumentals ----------
-  (function solo() {
-    const grid = $("#trackGrid"); if (!grid) return;
-    const tracks = window.SENQ_TRACKS || [], peaks = window.SENQ_PEAKS || {};
-    const filterRow = $("#soloFilter");
-    const genres = [...new Set(tracks.map((t) => t.genre))];
-    const label = (g) => ({ "hip-hop": "Hip-Hop", "lo-fi": "Lo-Fi", "r&b": "R&B" }[g] || g.charAt(0).toUpperCase() + g.slice(1));
-    filterRow.innerHTML = ['<button class="chip" aria-pressed="true" data-g="all">All<span class="count">' + tracks.length + "</span></button>"]
-      .concat(genres.map((g) => '<button class="chip" aria-pressed="false" data-g="' + esc(g) + '">' + esc(label(g)) + '<span class="count">' + tracks.filter((t) => t.genre === g).length + "</span></button>")).join("");
-    function seeded(str, n) { let h = 2166136261; for (const c of str) h = Math.imul(h ^ c.charCodeAt(0), 16777619); const out = []; for (let i = 0; i < n; i++) { h = Math.imul(h ^ (h >>> 13), 1274126177); out.push(0.3 + ((h >>> 0) % 1000) / 1430); } return out; }
-    grid.innerHTML = tracks.map((t, i) => {
-      const pk = (peaks[t.file] || seeded(t.title, 64));
-      const fname = t.file.split("/").pop();
-      return '<article class="track" id="track-' + i + '" data-i="' + i + '" data-genre="' + esc(t.genre) + '">' +
-        '<div class="track-head"><button class="t-play" aria-label="Play ' + esc(t.title) + '">' + ICON_PLAY + "</button>" +
-        '<div class="t-title"><h3>' + esc(t.title) + '</h3><div class="t-meta"><span class="tag genre">' + esc(label(t.genre)) + '</span><span class="tag">' + esc(t.bpm) + ' BPM</span><span class="tag">' + esc(t.key) + "</span></div></div></div>" +
-        '<p class="t-desc">' + esc(t.vibe || "") + "</p>" +
-        '<div class="t-wave" role="slider" tabindex="0" aria-label="Seek ' + esc(t.title) + '" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">' + pk.map((v) => '<i style="height:' + Math.max(8, Math.round(v * 100)) + '%"></i>').join("") + "</div>" +
-        '<div class="track-foot"><span class="t-time"><span class="cur">0:00</span> / <span class="len">' + (t.seconds ? fmt(t.seconds) : "–:––") + '</span></span>' +
-        '<a class="t-dl" href="' + esc(t.file) + '" download="' + esc("Senquiii - " + t.title + "." + (fname.split(".").pop() || "mp3")) + '">' + ICON_DL + "Download</a></div></article>";
-    }).join("");
-
-    const audio = new Audio(); audio.preload = "none";
-    let active = null;
-    const cardOf = (i) => grid.querySelector('.track[data-i="' + i + '"]');
-    function paint(card, frac) {
-      const bars = card.querySelectorAll(".t-wave i"), on = Math.round(frac * bars.length);
-      bars.forEach((b, j) => b.classList.toggle("on", j < on));
-      card.querySelector(".t-wave").setAttribute("aria-valuenow", Math.round(frac * 100));
-    }
-    function setPlaying(card, playing) {
-      card.classList.toggle("playing", playing);
-      const b = card.querySelector(".t-play");
-      b.innerHTML = playing ? ICON_PAUSE : ICON_PLAY;
-      b.setAttribute("aria-label", (playing ? "Pause " : "Play ") + card.querySelector("h3").textContent);
-    }
-    function play(i, at) {
-      const t = tracks[i];
-      if (active !== i) {
-        if (active !== null) { const c = cardOf(active); setPlaying(c, false); }
-        active = i; audio.src = t.file; audio.load();
-      }
-      const card = cardOf(i);
-      if (at != null) { const go = () => { if (audio.duration) audio.currentTime = at * audio.duration; }; audio.readyState >= 1 ? go() : audio.addEventListener("loadedmetadata", go, { once: true }); }
-      audio.play().then(() => setPlaying(card, true)).catch(() => {});
-      document.dispatchEvent(new CustomEvent("senq:audio", { detail: "solo" }));
-    }
-    grid.addEventListener("click", (e) => {
-      const card = e.target.closest(".track"); if (!card) return;
-      const i = +card.dataset.i;
-      if (e.target.closest(".t-play")) {
-        if (active === i && !audio.paused) { audio.pause(); setPlaying(card, false); } else play(i);
-      } else if (e.target.closest(".t-wave")) {
-        const r = e.target.closest(".t-wave").getBoundingClientRect();
-        play(i, Math.min(0.999, Math.max(0, (e.clientX - r.left) / r.width)));
-      }
-    });
-    grid.addEventListener("keydown", (e) => {
-      const wv = e.target.closest(".t-wave"); if (!wv) return;
-      const i = +wv.closest(".track").dataset.i;
-      if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
-        e.preventDefault();
-        if (active !== i) return play(i);
-        audio.currentTime = Math.max(0, Math.min(audio.duration || 0, audio.currentTime + (e.key === "ArrowRight" ? 5 : -5)));
-      } else if (e.key === " " || e.key === "Enter") { e.preventDefault(); grid.querySelector('.track[data-i="' + i + '"] .t-play').click(); }
-    });
-    audio.addEventListener("timeupdate", () => {
-      if (active === null || !audio.duration) return;
-      const c = cardOf(active); paint(c, audio.currentTime / audio.duration);
-      c.querySelector(".cur").textContent = fmt(audio.currentTime);
-    });
-    audio.addEventListener("loadedmetadata", () => { if (active !== null) cardOf(active).querySelector(".len").textContent = fmt(audio.duration); });
-    audio.addEventListener("ended", () => { if (active !== null) { const c = cardOf(active); setPlaying(c, false); paint(c, 0); c.querySelector(".cur").textContent = "0:00"; } });
-    audio.addEventListener("error", () => {
-      if (active === null) return;
-      const c = cardOf(active); setPlaying(c, false);
-      if (!c.querySelector(".t-missing")) {
-        c.querySelector(".t-play").disabled = true;
-        c.querySelector(".t-dl").classList.add("disabled");
-        c.insertAdjacentHTML("beforeend", '<p class="t-missing">Audio coming soon.</p>');
-      }
-      active = null;
-    });
-    document.addEventListener("senq:audio", (e) => { if (e.detail !== "solo" && !audio.paused) { audio.pause(); if (active !== null) setPlaying(cardOf(active), false); } });
-    filterRow.addEventListener("click", (e) => {
-      const b = e.target.closest(".chip"); if (!b) return;
-      $$(".chip", filterRow).forEach((c) => c.setAttribute("aria-pressed", c === b ? "true" : "false"));
-      $$(".track", grid).forEach((c) => (c.hidden = b.dataset.g !== "all" && c.dataset.genre !== b.dataset.g));
-    });
   })();
 
   // ---------- Learn: sub-tabs, writing prompts, fun facts ----------
@@ -424,5 +327,5 @@
     });
   })();
 
-  window.SenqSite = { show, has, esc, fmt };
+  window.SenqSite = { show, has, esc };
 })();
