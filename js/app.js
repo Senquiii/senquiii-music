@@ -266,7 +266,7 @@
   const modal = $("#donateModal");
   function closeDonate() { if (modal && !modal.hidden) { modal.hidden = true; if (modal._from) modal._from.focus(); } }
   (function donations() {
-    const link = CFG.PAYPAL_LINK || "[PAYPAL_LINK_PLACEHOLDER]";
+    const link = CFG.PAYPAL_LINK || "https://www.paypal.me/AyoneliDastan";
     const ready = /^https?:\/\//i.test(link) && !/PLACEHOLDER/i.test(link);
     $$("[data-donate]").forEach((a) => {
       if (ready) { a.href = link; $$(".ph", a).forEach((x) => x.remove()); return; }

@@ -2,7 +2,7 @@
   SENQUIII Music Lab: site settings. Every placeholder lives here (plus the literal text in index.html).
   To go live, find-and-replace across the project:
     xsenquiiix@gmail.com          -> the real contact email
-    [PAYPAL_LINK_PLACEHOLDER]    -> the real PayPal link (e.g. https://paypal.me/yourname)
+    PAYPAL_LINK -> the PayPal donation link
 */
 window.SENQ_CONFIG = {
   // Contact (Contact tab + footer). Messages arrive with the subject "[SENQUIII Contact] <visitor's subject>".
@@ -17,5 +17,5 @@ window.SENQ_CONFIG = {
 
   // Donations (optional). While this is still the placeholder, clicks show a friendly
   // "not set up yet" note instead of opening a broken link.
-  PAYPAL_LINK: "[PAYPAL_LINK_PLACEHOLDER]"
+  PAYPAL_LINK: "https://www.paypal.me/AyoneliDastan"
 };

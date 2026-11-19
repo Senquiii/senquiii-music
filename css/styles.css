@@ -280,7 +280,7 @@ h1{font-family:var(--f-display);font-weight:700;line-height:.92;margin:0 0 1.4re
 .vid .vid-play{position:absolute;inset:0;display:grid;place-items:center}
 .vid .vid-play span{width:34px;height:34px;border-radius:50%;background:rgba(13,13,15,.75);border:1px solid var(--amber-a35);display:grid;place-items:center}
 .vid .vid-play svg{width:14px;height:14px;fill:var(--amber);margin-left:2px}
-.vid-cap{display:block;font-size:.8rem;color:var(--text-2);margin-top:.4rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vid-cap{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;font-size:.8rem;color:var(--text-2);margin-top:.4rem;line-height:1.35;overflow:hidden}
 .vid.soon{cursor:default;display:grid;place-items:center;background:repeating-linear-gradient(135deg,var(--bg-2) 0 10px,var(--surface) 10px 20px)}
 .vid.soon span{font:500 .66rem var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
 .vid iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
@@ -432,7 +432,7 @@ h1{font-family:var(--f-display);font-weight:700;line-height:.92;margin:0 0 1.4re
   .hero-stats b{font-size:1.25rem}
   .portrait-hero{max-width:260px}
   .portrait figcaption{left:18px;top:18px;font-size:.62rem}
-  .vids{grid-template-columns:1fr 1fr}
+  .vids{grid-template-columns:1fr}
   .keys li{padding:1.25rem 1.1rem;gap:.9rem}
   .key-n{font-size:1.5rem;min-width:2rem}
   .prompt-card{flex-direction:column;align-items:flex-start}
