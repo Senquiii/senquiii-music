@@ -1,0 +1,90 @@
+name: Republish review site
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  republish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main (staging files)
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: staging
+      - name: Checkout gh-pages with history
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          fetch-depth: 0
+          path: site
+      - name: Apply roster and PayPal updates onto 7b60807
+        run: |
+          set -euo pipefail
+          cd site
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          BASE=7b608077fe1ea0d878ee493f0efe536b9afdf16f
+          git rm -rf --quiet .
+          git checkout "$BASE" -- .
+          python3 <<'PY'
+          import base64, pathlib
+          text = pathlib.Path("../staging/.publish-staging/updates.txt").read_text()
+          chunks = text.split("===FILE ")
+          for chunk in chunks:
+              chunk = chunk.strip()
+              if not chunk:
+                  continue
+              header, rest = chunk.split("\n===SHA ", 1)
+              sha, rest = rest.split("\n===DATA\n", 1)
+              data_b64, _ = rest.split("\n===END", 1)
+              path = pathlib.Path(header.strip())
+              path.parent.mkdir(parents=True, exist_ok=True)
+              path.write_bytes(base64.b64decode(data_b64.encode()))
+              print("wrote", path, "expected", sha.strip())
+          PY
+          check() {
+            local path="$1" expected="$2"
+            local got
+            got=$(git hash-object "$path")
+            if [ "$got" != "$expected" ]; then
+              echo "hash mismatch $path: $got != $expected"
+              exit 1
+            fi
+            echo "ok $path $got"
+          }
+          check index.html 54d1eca797d13d980c69d0499686db47cf3f73e7
+          check css/styles.css 970c85aa5c5ed5d2ec4b41096a4489e4ff739d2f
+          check js/app.js 973fac264127216a02f70d19f2f4ded437c47c13
+          check js/config.js 460b4bc50e8a33f6a5d885ff333b687e270c7363
+          check js/roster.js 123d12180acd3a4421014361b555697ee0bae497
+          check README.md f1e81010ab4d64b57b4808556960d340453a06a6
+          check css/curriculum.css 2204abd9e54945f16e5735930631ce7af85264ce
+          check js/search.js b0715c751025577b4e9ece376c3bc93df80e2f50
+          check js/curriculum-data.js 284f730b66a7c1c70e66a2aa1d827970386bb875
+          check js/curriculum.js c93e080ad21150468887c31040dbf1b928e66a67
+          check assets/senquiii-red.jpg cbb03471fbb3bae0dee043da0b646dabaaaf34b3
+          check assets/senquiii-blue.jpg 1e9982949b12a0e6cd63afd87277f4a3dd9232e1
+          check assets/favicon.svg a23b0f3b7ef5233b93f4fa4a01ad4976ffc75d28
+          for gone in css/beatmaker.css js/beatgen.js js/beatmaker.js js/tracks.js js/peaks.js audio; do
+            if [ -e "$gone" ]; then
+              echo "still present: $gone"
+              exit 1
+            fi
+            echo "gone $gone"
+          done
+          git add -A
+          git status
+          git commit -m "Add roster videos, artist name updates, and PayPal support link"
+          git push origin gh-pages
+      - name: Remove temporary workflow and staging from main
+        if: success()
+        run: |
+          set -euo pipefail
+          cd staging
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm -f .github/workflows/republish-review-site.yml
+          git rm -rf .publish-staging
+          git commit -m "Remove temporary republish workflow and staging files"
+          git push origin main
